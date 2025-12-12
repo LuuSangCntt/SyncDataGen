@@ -15,3 +15,13 @@ git push -u origin main
 git remote add origin https://github.com/LuuSangCntt/SyncDataGen.git
 git branch -M main
 git push -u origin main
+
+
+
+*Chú ý: trong manifest của project chính, cần thêm đủ các thư viện dependency của perception thì mới hết lỗi
+  "dependencies": {
+    "com.unity.burst": "1.7.3",
+    "com.unity.collections": "1.2.4",
+    "com.unity.nuget.newtonsoft-json": "3.0.2",
+    "com.unity.render-pipelines.core": "12.1.7"
+  },
