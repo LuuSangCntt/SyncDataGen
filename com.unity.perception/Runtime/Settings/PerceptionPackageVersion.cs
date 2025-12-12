@@ -27,7 +27,7 @@ namespace UnityEngine.Perception.Settings
                 if (s_Instance == null)
                 {
 #if UNITY_EDITOR
-                    s_Instance = new PerceptionPackageVersion { m_PerceptionVersion = GetPackageVersion()};
+                    s_Instance = new PerceptionPackageVersion { m_PerceptionVersion = "1.0.0-preview.1"};
                     return s_Instance;
 #else
                     try
