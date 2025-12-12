@@ -1,0 +1,56 @@
+# Tạm thời (Temp)
+/[Ll]ibrary/
+/[Tt]emp/
+/[Oo]bj/
+/[Bb]uild/
+/[Bb]uilds/
+/Assets/AssetStoreTools/
+/Assets/AssetStoreTools/Editor/
+
+# Logs
+/[Ll]ogs/
+/[Uu]nity[Tt]est[Rr]unner[Ll]og.txt
+/[Ss]hips[Ll]og.txt
+
+# File cấu hình (Project Settings) được tạo tự động (mặc định)
+/Assets/AssetStoreTools/
+
+# Các file Visual Studio/JetBrains (IDE)
+*.csproj
+*.unityproj
+*.sln
+*.suo
+*.sln.ide
+*.user
+*.userprefs
+*.pidb
+*.booproj
+*.svd
+*.pdb
+*.mdb
+
+# Cache của Rider/VS Code
+.idea/
+.vscode/
+
+# Build WebGL
+/Assets/StreamingAssets/WebGL/
+
+# File cấu hình của Unity Crash Handler
+Assets/UnityCrashHandler.cfg
+
+# File cấu hình của macOS/Windows
+.DS_Store
+Thumbs.db
+
+# ❌❌❌ QUAN TRỌNG: LOẠI TRỪ TẤT CẢ CÁC FILE METADATA (.meta) ❌❌❌
+# Đây là phần đáp ứng yêu cầu của bạn để KHÔNG đồng bộ file .meta
+**/*.meta
+
+# Bỏ qua các file cấu hình và cài đặt dự án KHÔNG phải là metadata, 
+# nhưng thường được giữ riêng tư hoặc thay đổi thường xuyên
+# Lưu ý: Các file này thường NÊN được đưa vào Git. 
+# Nếu bạn loại trừ chúng, hãy đảm bảo tất cả thành viên trong nhóm 
+# đều có các cài đặt phù hợp.
+#/ProjectSettings/
+#/UserSettings/
