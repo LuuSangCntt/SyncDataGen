@@ -54,3 +54,7 @@ Thumbs.db
 # đều có các cài đặt phù hợp.
 #/ProjectSettings/
 #/UserSettings/
+
+# Bỏ qua một số thư mục không quan trọng trong com.unity.perception
+/com.unity.perception/Documentation~/
+/com.unity.perception/Samples~/
