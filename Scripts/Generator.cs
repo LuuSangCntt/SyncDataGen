@@ -1,6 +1,7 @@
 using System;
 using System.Collections;
 using System.Collections.Generic;
+using System.IO;
 using System.Linq;
 using Unity.Collections;
 using Unity.Mathematics;
@@ -25,9 +26,9 @@ public class Generator : MonoBehaviour
 
     public bool createBoundingboxLabel = true;
     public bool createSegmentationLabel = true;
-    public bool createDepthLabel = false; 
+    public bool createDepthLabel = false;
 
- 
+
     [SerializeField] private GenDataSettings ExtendedSettings;
     [SerializeField] private float timeToRender = 1f;
     [SerializeField] private float timeToCapture = 0.5f;
@@ -73,12 +74,17 @@ public class Generator : MonoBehaviour
         Debug.LogError("Starting....");
         Ins = this;
         InitializeLabels();
-        Debug.Log("Start");
+
         SetOutPath();
+
+        timeToRender = GeneratorSettings.Instance.TimeToRender;
+        timeToCapture = GeneratorSettings.Instance.TimeToCapture;
+
     }
 
     private void Update()
     {
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //StartGenerateData();
@@ -88,67 +94,14 @@ public class Generator : MonoBehaviour
             }
             else
             {
-                StartGenerateData(); // Bắt đầu lại quá trình tạo dữ liệu
+                //StartGenerateData(); // Bắt đầu lại quá trình tạo dữ liệu
             }
         }
+#endif
     }
 
-    /// <summary>
-    /// Khởi tạo danh sách nhãn từ Parameters.Models.
-    /// </summary>
-    //private void InitializeLabels()
-    //{
-    //    if (parameters == null || parameters.Models == null)
-    //    {
-    //        Debug.LogError("Parameters or Models is null");
-    //        return;
-    //    }
 
-    //    var labelEntries = new List<IdLabelEntry>();
-    //    labelEntries.Add(new IdLabelEntry
-    //    {
-    //        label = "Terrain", // Thêm nhãn cho nền
-    //        id = 0 // ID cho nền
-    //    });
-    //    labelEntries.Add(new IdLabelEntry
-    //    {
-    //        label = "Tree", // Thêm nhãn cho nền
-    //        id = 1 // ID cho nền
-    //    });
-    //    for (int i = 0; i < parameters.Models.Count; i++)
-    //    {
-    //        labelEntries.Add(new IdLabelEntry
-    //        {
-    //            label = parameters.Models[i].Label,
-    //            id = i + 2
-    //        });
-    //    }
-    //    if (idLabelConfig != null)
-    //        idLabelConfig.Init(labelEntries);
 
-    //    // Khởi tạo nhãn cho phân đoạn ngữ nghĩa
-    //    var semanticLabelEntries = new List<SemanticSegmentationLabelEntry>();
-    //    semanticLabelEntries.Add(new SemanticSegmentationLabelEntry
-    //    {
-    //        label = "Terrain", // Thêm nhãn cho nền
-    //        color = Color.gray // Màu sắc cho nền
-    //    });
-    //    semanticLabelEntries.Add(new SemanticSegmentationLabelEntry
-    //    {
-    //        label = "Tree", // Thêm nhãn cho cây
-    //        color = Color.green // Màu sắc cho cây
-    //    });
-    //    for (int i = 0; i < parameters.Models.Count; i++)
-    //    {
-    //        semanticLabelEntries.Add(new SemanticSegmentationLabelEntry
-    //        {
-    //            label = parameters.Models[i].Label,
-    //            color = Color.HSVToRGB(i / (float)parameters.Models.Count, 1f, 1f), // Màu sắc khác nhau cho mỗi nhãn
-    //        });
-    //    }
-    //    if (semanticSegmentationLabelConfig != null)
-    //        semanticSegmentationLabelConfig.Init(semanticLabelEntries);
-    //}
     private void InitializeLabels()
     {
         if (parameters == null || parameters.Models == null)
@@ -216,11 +169,16 @@ public class Generator : MonoBehaviour
     }
 
 
-/// <summary>
-/// Thiết lập đường dẫn lưu ảnh và nhãn
-/// </summary>
-private void SetOutPath()
+    /// <summary>
+    /// Thiết lập đường dẫn lưu ảnh và nhãn
+    /// </summary>
+    private void SetOutPath()
     {
+        if (File.Exists(GeneratorSettings.Instance.SyncDataPath) == false)
+        {
+            Debug.Log("Create Directory: " + GeneratorSettings.Instance.SyncDataPath);
+            Directory.CreateDirectory(GeneratorSettings.Instance.SyncDataPath);
+        }
         PerceptionSettings.SetOutputBasePath(GeneratorSettings.Instance.SyncDataPath);
         DatasetCapture.ResetSimulation();
     }
