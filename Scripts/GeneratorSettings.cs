@@ -32,6 +32,8 @@ public class GeneratorSettings : YamlData<GeneratorSettings>
             {
                 string configPath = System.IO.Path.Combine(Application.streamingAssetsPath, "GeneratorSettings.yaml");
                 _instance = GeneratorSettings.Load(configPath);
+                _instance.SyncDataPath.Trim();
+                _instance.RootPath.Trim();  
             }
             return _instance;
         }

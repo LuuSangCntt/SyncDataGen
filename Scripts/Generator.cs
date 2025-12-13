@@ -80,7 +80,7 @@ public class Generator : MonoBehaviour
 
     private void Update()
     {
-#if UNITY_EDITOR
+
         if (Input.GetKeyDown(KeyCode.Space))
         {
             //StartGenerateData();
@@ -93,7 +93,7 @@ public class Generator : MonoBehaviour
                 StartGenerateData(); // Bắt đầu lại quá trình tạo dữ liệu
             }
         }
-#endif
+
     }
 
     private void InitializeLabels()
@@ -104,7 +104,7 @@ public class Generator : MonoBehaviour
             Debug.LogError("Parameters or Models list is null. Cannot initialize labels.");
             return;
         }
-        Debug.Log($"{parameters.Models.Count}");
+        //Debug.Log($"Số lượng model trong file parameter {parameters.Models.Count}");
 
         // --- 1. Tạo và Khởi tạo IdLabelConfig ---
         if (createBoundingboxLabel)
@@ -171,7 +171,7 @@ public class Generator : MonoBehaviour
     /// </summary>
     private void SetOutPath()
     {
-        if (File.Exists(GeneratorSettings.Instance.SyncDataPath) == false)
+        if (File.Exists(GeneratorSettings.Instance.SyncDataPath.Trim()) == false)
         {
             Debug.Log("Create Directory: " + GeneratorSettings.Instance.SyncDataPath);
             Directory.CreateDirectory(GeneratorSettings.Instance.SyncDataPath);
@@ -587,7 +587,7 @@ public class Generator : MonoBehaviour
         }
 
         GameObject obj = null;
-        string model_path = Path.Combine(GeneratorSettings.Instance.RootPath, model_name);
+        string model_path = Path.Combine(GeneratorSettings.Instance.RootPath, model_name.Trim());
         AssetBundleLoader.Instance.TryGetModel(model_path, out obj);
         Debug.Log("Try load model successed \n" + model_path);
 

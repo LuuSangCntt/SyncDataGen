@@ -24,15 +24,16 @@ public class AssetBundleLoader : MonoBehaviour
     public GameObject target;
     public void Update()
     {
-       
+#if UNITY_EDITOR
         if (Input.GetKeyDown(KeyCode.L))
         {
             TryGetModel(objectName, out target);
         }
-        if(Input.GetKeyDown(KeyCode.U))
+        if (Input.GetKeyDown(KeyCode.U))
         {
             UnloadAllModels();
         }
+#endif
     }
 
     /// <summary>
@@ -60,47 +61,6 @@ public class AssetBundleLoader : MonoBehaviour
         obj = TryLoadAssetBundle(path);
         return obj != null;
     }
-
-    /// <summary>
-    /// Load prefab từ file AssetBundle
-    /// </summary>
-    //private GameObject TryLoadAssetBundle(string path)
-    //{
-    //    string path = Path.Combine(GeneratorSettings.Instance.RootPath, path);
-
-    //    if (!File.Exists(path))
-    //    {
-    //        Debug.LogWarning("File not found: " + path);
-    //        return null;
-    //    }
-
-    //    var bundle = AssetBundle.LoadFromFile(path);
-    //    if (bundle == null)
-    //    {
-    //        Debug.LogWarning("Failed to load AssetBundle: " + path);
-    //        return null;
-    //    }
-
-    //    // (Điều kiện: kiểm soát AssetBundle chỉ có 1 GameObject)
-    //    GameObject prefab = bundle.LoadAllAssets()[0] as GameObject;
-    //    if (prefab == null)
-    //    {
-    //        Debug.LogWarning("First asset is not a GameObject in bundle: " + path);
-    //        bundle.Unload(false);
-    //        return null;
-    //    }
-
-    //    // Cache prefab trước khi unload bundle
-    //    LoadedModels[path] = prefab;
-
-    //    // Tạo instance để trả về
-    //    GameObject obj = Instantiate(prefab);
-
-    //    // Giải phóng data bundle, giữ lại prefab đã cache
-    //    bundle.Unload(false);
-
-    //    return obj;
-    //}
 
     private GameObject TryLoadAssetBundle(string path)
     {

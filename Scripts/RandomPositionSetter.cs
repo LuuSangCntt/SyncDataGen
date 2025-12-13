@@ -168,7 +168,7 @@ public class RandomPositionSetter : MonoBehaviour
         // 4. Luôn nhìn vào tâm vật thể
         _cam.LookAt(center);
 
-        Debug.Log($"Đã Thiết lập Camera. Khoảng cách: {distance}, Tỉ lệ mục tiêu: {targetRatio}");
+        //Debug.Log($"Đã Thiết lập Camera. Khoảng cách: {distance}, Tỉ lệ mục tiêu: {targetRatio}");
     }
     /// </summary>
     /// <param name="cam">Transform của Camera.</param>
@@ -223,7 +223,7 @@ public class RandomPositionSetter : MonoBehaviour
             cam.Rotate(Random.Range(-5, 5), Random.Range(-5, 5), 0);
         }
 
-        Debug.Log($"Camera được điều chỉnh từ khoảng cách {currentDist} thành {targetDist}. Tỷ lệ mới sẽ gần {targetRatio} hơn.");
+        //Debug.Log($"Camera được điều chỉnh từ khoảng cách {currentDist} thành {targetDist}. Tỷ lệ mới sẽ gần {targetRatio} hơn.");
     }
 
 
