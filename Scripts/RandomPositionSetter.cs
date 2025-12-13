@@ -71,6 +71,25 @@ public class RandomPositionSetter : MonoBehaviour
         {
             return;
         }
+
+        //Thiết lập một số thuộc tính
+        float HeightMin = 0f; // Chiều cao tối thiểu cho các mô hình khác
+        float HeightMax = 1f; // Chiều cao tối đa cho các mô hình khác
+        bool RotateOnlyYAxis = true; // Chỉ xoay theo trục Y cho các mô hình khác
+        if (modelInfo.Label.StartsWith("Air."))
+        {
+            HeightMin = 150f; // Đặt chiều cao tối thiểu cho mô hình Air
+            HeightMax = 400f; // Đặt chiều cao tối đa cho mô hình Air
+            RotateOnlyYAxis = false; // Không xoay chỉ theo trục Y
+        }
+        else
+        {
+            HeightMin = 0f; // Chiều cao tối thiểu cho các mô hình khác
+            HeightMax = 1f; // Chiều cao tối đa cho các mô hình khác
+            RotateOnlyYAxis = true; // Chỉ xoay theo trục Y cho các mô hình khác
+        }
+
+
         //Random position
         float x = Random.Range(MinX, MaxX);
         float z = Random.Range(MinZ, MaxZ);
@@ -88,25 +107,13 @@ public class RandomPositionSetter : MonoBehaviour
             {
                 Debug.LogError("Terrain height not found at " + new Vector3(x, 3000, z));
             }
-            else { y = terrainHeight + Random.Range(modelInfo.HeightMin, modelInfo.HeightMax); }
+            else { y = terrainHeight + Random.Range(HeightMin, HeightMax); }
         }
-
-        //Kiểm tra đảm bảo HeightOffset so với địa hình
-        //if (HeightOffsetOverGround >= 0)
-        //{
-        //    if (terrainHeight != -9999)
-        //    {
-        //        while (y < terrainHeight + HeightOffsetOverGround)
-        //        {
-        //            y = CenterPoint.y + Random.Range(modelInfo.HeightMin, modelInfo.HeightMax);
-        //        }
-        //    }
-        //}
 
         obj.transform.position = new Vector3(x, y, z);
 
         //Random rotation
-        if (modelInfo.RotateOnlyYAxis)
+        if (RotateOnlyYAxis)
         {
             obj.transform.rotation = Quaternion.Euler(0, Random.Range(0, 360), 0);
         }
@@ -115,80 +122,6 @@ public class RandomPositionSetter : MonoBehaviour
             obj.transform.rotation = Quaternion.Euler(Random.Range(0, 360), Random.Range(0, 360), Random.Range(0, 360));
         }
     }
-
-    /// <summary>
-    /// Đặt camera tại vị trí cách vật thể một khoảng ngẫu nhiên
-    /// Góc tà và phương vị từ vật thể đến camera cũng ngẫu nhiên
-    /// </summary>
-    /// <param name="_cam"></param>
-    /// <param name="_target"></param>
-    //public void SetCameraRandomPosition(Transform _cam, Transform _target)
-    //{
-    //    if (_cam == null || _target == null)
-    //    {
-    //        Debug.LogError("Camera or target is null");
-    //        return;
-    //    }
-    //    if (Enable == false)
-    //    {
-    //        return;
-    //    }
-    //    BoxCollider box = _target.gameObject.GetComponent<BoxCollider>();
-    //    if (box == null)
-    //    {
-    //        //Nếu không có thì thêm thông số mặc định
-    //        Debug.LogError($"Target {_target.name} has no boxcollider. Add default boxcollider (10,10,10)");
-    //        box = _target.gameObject.AddComponent<BoxCollider>();
-    //        box.size = new Vector3(10, 10, 10);
-    //    }
-    //    float maxSize = Mathf.Max(box.size.x, box.size.y, box.size.z);
-    //    // Random distance from the target
-    //    float distance = Random.Range(DistanceFactorMin * maxSize, DistanceFactorMax * maxSize); // Adjust the range as needed
-    //    //float minDistance = 0;
-    //    //float maxDistance = 0;
-    //    //CaculateMinDistance(_target.gameObject, out minDistance, out maxDistance);
-    //    //float distance = Random.Range(minDistance, maxDistance);
-
-    //    bool CamPosvalid = false;
-    //    float x = 0, y = 0, z = 0;
-    //    while (CamPosvalid == false)
-    //    {
-    //        // Random angles for elevation and azimuth
-    //        float t = Random.value; // [0,1)
-    //        float bias = Mathf.Pow(t, 2f); // lũy thừa >1 làm bias về nhỏ. Dùng nó để điều chỉnh sác xuất góc lớn nhỏ hơn
-    //        float elevation = Mathf.Lerp(5f, 90f, bias); // Elevation angle in degrees
-
-    //        float azimuth = Random.Range(0.0f, 360.0f); // Azimuth angle in degrees
-
-    //        // Convert angles to radians
-    //        float elevationRad = elevation * Mathf.Deg2Rad;
-    //        float azimuthRad = azimuth * Mathf.Deg2Rad;
-
-    //        // Calculate the camera's position
-    //        x = _target.position.x + distance * Mathf.Cos(elevationRad) * Mathf.Cos(azimuthRad);
-    //        y = _target.position.y + distance * Mathf.Sin(elevationRad);
-    //        z = _target.position.z + distance * Mathf.Cos(elevationRad) * Mathf.Sin(azimuthRad);
-
-    //        float terrainHeight = GetTerrainHeight(new Vector3(x, 0, z));
-    //        if (terrainHeight != -9999)
-    //        {
-    //            if (y > terrainHeight)
-    //            {
-    //                CamPosvalid = true;
-    //            }
-    //            else { Debug.Log("Redo set cam position"); }
-    //        }
-    //        else { CamPosvalid = true; }
-    //    }
-
-    //    // Set the camera's position
-    //    _cam.position = new Vector3(x, y, z);
-
-    //    // Make the camera look at the target
-    //    _cam.LookAt(_target);
-    //    // Rotate camera a little bit in y and x axis
-    //    _cam.Rotate(Random.Range(-5, 5), Random.Range(-5, 5), 0);
-    //}
 
     /// <summary>
     /// Đặt camera tại vị trí cách vật thể một khoảng ngẫu nhiên

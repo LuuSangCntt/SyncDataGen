@@ -69,16 +69,23 @@ public class Generator : MonoBehaviour
         public static int MinBoundingBoxHeight = 50;
     }
 
+    public ParameterPack XemPara;
+
     private void Start()
     {
         Debug.LogError("Starting....");
+        //ParameterPack.CreateDefault();
+        XemPara = ParameterPack.Instance;
+        Debug.Log($"Paramerter package models count {ParameterPack.Instance.Models.Count}");
         Ins = this;
-        InitializeLabels();
+        //InitializeLabels();
 
         SetOutPath();
 
         timeToRender = GeneratorSettings.Instance.TimeToRender;
         timeToCapture = GeneratorSettings.Instance.TimeToCapture;
+
+        
 
     }
 
@@ -99,8 +106,6 @@ public class Generator : MonoBehaviour
         }
 #endif
     }
-
-
 
     private void InitializeLabels()
     {
@@ -295,9 +300,9 @@ public class Generator : MonoBehaviour
     {
         GeneratedPicNum = 0;
         TotalPicNum = 0;
-        foreach (var model in parameters.Models)
+        foreach (Model3D model in parameters.Models)
         {
-            TotalPicNum += model.NumberOfPictures;
+            TotalPicNum += ParameterPack.Instance.NumberOfPicturesPerModel;
         }
     }
 
@@ -306,9 +311,11 @@ public class Generator : MonoBehaviour
     /// </summary>
     private IEnumerator GenerateData()
     {
+
         Debug.Log("Starting data generation");
         float startTime = Time.time;
 
+       
         foreach (var model in parameters.Models)
         {
             if (ExtendedSettings != null)
@@ -326,35 +333,24 @@ public class Generator : MonoBehaviour
 
             if (ExtendedSettings != null)
             {
-                model.NumberOfPictures = ExtendedSettings.SoLuongAnh;
+                ParameterPack.Instance.NumberOfPicturesPerModel = ExtendedSettings.SoLuongAnh;
             }
             else
             {
-                model.NumberOfPictures = parameters.NumberOfPicturesPerModel;
+                ParameterPack.Instance.NumberOfPicturesPerModel = parameters.NumberOfPicturesPerModel;
             }
 
 
             //Override một số thuộc tính
-            int picturesPerVariant = Mathf.CeilToInt((float)model.NumberOfPictures / selectedVariantCount);
-            if (model.Label.StartsWith("Air."))
-            {
-                model.HeightMin = 150f; // Đặt chiều cao tối thiểu cho mô hình Air
-                model.HeightMax = 400f; // Đặt chiều cao tối đa cho mô hình Air
-                model.RotateOnlyYAxis = false; // Không xoay chỉ theo trục Y
-            }
-            else
-            {
-                model.HeightMin = 0f; // Chiều cao tối thiểu cho các mô hình khác
-                model.HeightMax = 1f; // Chiều cao tối đa cho các mô hình khác
-                model.RotateOnlyYAxis = true; // Chỉ xoay theo trục Y cho các mô hình khác
-            }
+            int picturesPerVariant = Mathf.CeilToInt((float)ParameterPack.Instance.NumberOfPicturesPerModel / selectedVariantCount);
+            
             //=====
             foreach (var variant in model.Variants)
             {
                 if (!variant.IsSelected) continue;
 
                 DestroyCurrentModel();
-                currentModel = InstantiateModel(variant.Model, model.Label);
+                currentModel = InstantiateModel(variant.Name, model.Label);
                 //if (currentModel.name.StartsWith("Sea"))
                 //{
                 //    var fitToWater = currentModel.AddComponent<FitToWaterSurface>();
@@ -363,13 +359,13 @@ public class Generator : MonoBehaviour
 
                 if (currentModel == null) continue;
 
-                for (int i = 0; i < picturesPerVariant && pictureCount < model.NumberOfPictures; i++)
+                for (int i = 0; i < picturesPerVariant && pictureCount < ParameterPack.Instance.NumberOfPicturesPerModel; i++)
                 {
                     yield return GenerateSingleImage(model);
 
                     pictureCount++;
                     GeneratedPicNum++;
-                    //Debug.Log($"Captured {model.Label} - Image {pictureCount}/{model.NumberOfPictures}");
+                    //Debug.Log($"Captured {model.Label} - Image {pictureCount}/{ParameterPack.Instance.NumberOfPicturesPerModel}");
 
 
                     if (autoCapture)
@@ -425,6 +421,7 @@ public class Generator : MonoBehaviour
         objectNumber = 0;
         validCount = 0;
 
+        
         if (currentModel == null || objCamera == null || perceptionCamera == null)
         {
             Debug.LogError($"Cannot generate image for {model.Label}: currentModel, objCamera, or perceptionCamera is null");
@@ -628,15 +625,16 @@ public class Generator : MonoBehaviour
     /// <summary>
     /// Tạo instance của mô hình 3D và gắn nhãn.
     /// </summary>
-    private GameObject InstantiateModel(GameObject model, string label)
+    private GameObject InstantiateModel(string model_path, string label)
     {
-        if (model == null)
+        if (String.IsNullOrEmpty( model_path))
         {
             Debug.LogError("Model is null");
             return null;
         }
-
-        GameObject obj = Instantiate(model);
+        //model_path = 
+        //GameObject obj = Instantiate(model
+        GameObject obj = null;
         var labeling = obj.AddComponent<Labeling>();
         labeling.labels = new List<string> { label };
         labeling.RefreshLabeling();
