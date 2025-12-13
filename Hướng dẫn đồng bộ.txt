@@ -17,6 +17,10 @@ git branch -M main
 git push -u origin main
 
 
+Tảo về thì chỉ cần vào folder cha, rồi chạy lệnh 
+git clone https://github.com/LuuSangCntt/SyncDataGen.git
+
+
 
 *Chú ý: trong manifest của project chính, cần thêm đủ các thư viện dependency của perception thì mới hết lỗi
   "dependencies": {
