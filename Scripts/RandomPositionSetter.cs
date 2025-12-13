@@ -62,7 +62,7 @@ public class RandomPositionSetter : MonoBehaviour
     /// <param name="obj"></param>
     public void SetRandomPosition(GameObject obj, Model3D modelInfo)
     {
-        Debug.Log("Set object random position");
+        //Debug.Log("Set object random position");
         if (obj == null)
         {
             return;

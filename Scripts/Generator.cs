@@ -29,9 +29,8 @@ public class Generator : MonoBehaviour
     public bool createDepthLabel = false;
 
 
-    [SerializeField] private GenDataSettings ExtendedSettings;
     [SerializeField] private float timeToRender = 1f;
-    [SerializeField] private float timeToCapture = 0.5f;
+    //[SerializeField] private float timeToCapture = 0.5f;
     [SerializeField] private bool autoCapture = false;
     [SerializeField] private int maxRetries = 100;
 
@@ -39,8 +38,6 @@ public class Generator : MonoBehaviour
     private GameObject currentModel;
     private bool isProcessing = false;
     private bool needCapture = false;
-
-
 
     //[SerializeField] WaterSurface waterSurface; // Tham chiếu đến WaterSurface với môi trường là biển
 
@@ -69,24 +66,16 @@ public class Generator : MonoBehaviour
         public static int MinBoundingBoxHeight = 50;
     }
 
-    public ParameterPack XemPara;
-
     private void Start()
     {
-        Debug.LogError("Starting....");
-        //ParameterPack.CreateDefault();
-        XemPara = ParameterPack.Instance;
-        Debug.Log($"Paramerter package models count {ParameterPack.Instance.Models.Count}");
+        Debug.LogError($"Starting....");
+
         Ins = this;
-        //InitializeLabels();
+        InitializeLabels();
 
         SetOutPath();
 
         timeToRender = GeneratorSettings.Instance.TimeToRender;
-        timeToCapture = GeneratorSettings.Instance.TimeToCapture;
-
-        
-
     }
 
     private void Update()
@@ -101,7 +90,7 @@ public class Generator : MonoBehaviour
             }
             else
             {
-                //StartGenerateData(); // Bắt đầu lại quá trình tạo dữ liệu
+                StartGenerateData(); // Bắt đầu lại quá trình tạo dữ liệu
             }
         }
 #endif
@@ -109,11 +98,13 @@ public class Generator : MonoBehaviour
 
     private void InitializeLabels()
     {
+        parameters = ParameterPack.Instance;
         if (parameters == null || parameters.Models == null)
         {
             Debug.LogError("Parameters or Models list is null. Cannot initialize labels.");
             return;
         }
+        Debug.Log($"{parameters.Models.Count}");
 
         // --- 1. Tạo và Khởi tạo IdLabelConfig ---
         if (createBoundingboxLabel)
@@ -132,6 +123,7 @@ public class Generator : MonoBehaviour
             // Thêm các nhãn từ Models (bắt đầu từ ID 2)
             for (int i = 0; i < parameters.Models.Count; i++)
             {
+                //Debug.Log($"Add label {parameters.Models[i].Label} ({i})"); 
                 labelEntries.Add(new IdLabelEntry
                 {
                     label = parameters.Models[i].Label,
@@ -257,15 +249,6 @@ public class Generator : MonoBehaviour
         waitingForResult = false;
     }
 
-
-    public void StartGenerateDataWithSetting(GenDataSettings settings)
-    {
-        Debug.Log("StartGenerateDataWithSetting");
-        Debug.Log("Process status: isProcessing = " + isProcessing);
-        ExtendedSettings = settings;
-        StartGenerateData();
-    }
-    /// <summary>
     /// Bắt đầu quá trình tạo dữ liệu.
     /// </summary>
     public void StartGenerateData()
@@ -281,7 +264,6 @@ public class Generator : MonoBehaviour
             Debug.LogError("Parameters or Models is null or empty");
             return;
         }
-        //SetOutPath();
         if (!SetupPerceptionCamera())
         {
             return;
@@ -315,35 +297,16 @@ public class Generator : MonoBehaviour
         Debug.Log("Starting data generation");
         float startTime = Time.time;
 
-       
+
         foreach (var model in parameters.Models)
         {
-            if (ExtendedSettings != null)
-            {
-                if (!ExtendedSettings.Objects.Contains(model.Label))
-                {
-                    Debug.LogWarning($"Model {model.Label} is not selected");
-                    continue;
-                }
-            }
-
             int pictureCount = 0;
             int selectedVariantCount = model.Variants.Count(v => v.IsSelected);
             if (selectedVariantCount == 0) continue;
 
-            if (ExtendedSettings != null)
-            {
-                ParameterPack.Instance.NumberOfPicturesPerModel = ExtendedSettings.SoLuongAnh;
-            }
-            else
-            {
-                ParameterPack.Instance.NumberOfPicturesPerModel = parameters.NumberOfPicturesPerModel;
-            }
-
-
             //Override một số thuộc tính
             int picturesPerVariant = Mathf.CeilToInt((float)ParameterPack.Instance.NumberOfPicturesPerModel / selectedVariantCount);
-            
+
             //=====
             foreach (var variant in model.Variants)
             {
@@ -351,11 +314,6 @@ public class Generator : MonoBehaviour
 
                 DestroyCurrentModel();
                 currentModel = InstantiateModel(variant.Name, model.Label);
-                //if (currentModel.name.StartsWith("Sea"))
-                //{
-                //    var fitToWater = currentModel.AddComponent<FitToWaterSurface>();
-                //    fitToWater.targetSurface = waterSurface; // Gắn WaterSurface vào FitToWaterSurface
-                //}
 
                 if (currentModel == null) continue;
 
@@ -366,7 +324,6 @@ public class Generator : MonoBehaviour
                     pictureCount++;
                     GeneratedPicNum++;
                     //Debug.Log($"Captured {model.Label} - Image {pictureCount}/{ParameterPack.Instance.NumberOfPicturesPerModel}");
-
 
                     if (autoCapture)
                     {
@@ -421,7 +378,7 @@ public class Generator : MonoBehaviour
         objectNumber = 0;
         validCount = 0;
 
-        
+
         if (currentModel == null || objCamera == null || perceptionCamera == null)
         {
             Debug.LogError($"Cannot generate image for {model.Label}: currentModel, objCamera, or perceptionCamera is null");
@@ -440,7 +397,7 @@ public class Generator : MonoBehaviour
         bool finish = false;
         while (!finish)
         {
-            float targetRatio = (float)UnityEngine.Random.Range(ExtendedSettings.DoLonAnhMin, ExtendedSettings.DoLonAnhMax) / 100;
+            float targetRatio = (float)UnityEngine.Random.Range(ParameterPack.Instance.DoLonAnhMin, ParameterPack.Instance.DoLonAnhMax) / 100;
             Debug.Log("Target ratio = " + targetRatio);
 
 
@@ -476,7 +433,7 @@ public class Generator : MonoBehaviour
         while (step1_success == false && retryCount < maxRetries)
         {
             retryCount++;
-            Debug.Log($"Step 1 Retry " + retryCount);
+            //Debug.Log($"Step 1 Retry " + retryCount);
             float defaultRatio = 0.3f;
             bool highAngleOnly = true;
             if (model.Label.StartsWith("Air")) highAngleOnly = false;
@@ -495,7 +452,7 @@ public class Generator : MonoBehaviour
             if (objectNumber > 0 && areaRatio > 20 && areaRatio < 60)
             {
                 step1_success = true;
-                Debug.Log($"Xong bước 1 sau {retryCount} lần thử");
+                Debug.Log($"Model {model.Label}. Xong bước 1 sau {retryCount} lần thử");
             }
         }
     }
@@ -528,16 +485,15 @@ public class Generator : MonoBehaviour
 
             if (validCount == 0)
             {
-                Debug.LogWarning($"Retry {retryCount}/{maxRetries} failed for {model.Label}. \nCurrentRatio/TargetRatio {areaRatio}/{targetRatio} : ");
+                //Debug.LogWarning($"Retry {retryCount}/{maxRetries} failed for {model.Label}. \nCurrentRatio/TargetRatio {areaRatio}/{targetRatio} : ");
             }
             if (validCount > 0)
             {
                 step2_success = true;
+                Debug.Log($"Model {model.Label}. Xong bước 2 sau {retryCount} lần thử");
             }
         }
     }
-
-
 
 
     //Ảnh hiện tại
@@ -573,17 +529,14 @@ public class Generator : MonoBehaviour
                 objectInfo.boundingBox.width > ParameterConfig.MinBoundingBoxWidth &&
                 objectInfo.boundingBox.height > ParameterConfig.MinBoundingBoxHeight)
             {
-                if (ExtendedSettings != null)
+                if (areaRatio >= ParameterPack.Instance.DoLonAnhMin && areaRatio <= ParameterPack.Instance.DoLonAnhMax)
                 {
-                    if (areaRatio >= ExtendedSettings.DoLonAnhMin && areaRatio <= ExtendedSettings.DoLonAnhMax)
-                    {
-                        //Debug.Log($"Valid object: {objectInfo.boundingBox}, PixelCount: {objectInfo.pixelCount} Ratio: {areaRatio}");
-                        validCount++;
-                    }
-                    else
-                    {
-                        //Debug.LogWarning($"Ảnh có độ lớn không phù hợp. Ratio {areaRatio}");
-                    }
+                    //Debug.Log($"Valid object: {objectInfo.boundingBox}, PixelCount: {objectInfo.pixelCount} Ratio: {areaRatio}");
+                    validCount++;
+                }
+                else
+                {
+                    //Debug.LogWarning($"Ảnh có độ lớn không phù hợp. Ratio {areaRatio}");
                 }
                 //validCount++;
             }
@@ -625,16 +578,19 @@ public class Generator : MonoBehaviour
     /// <summary>
     /// Tạo instance của mô hình 3D và gắn nhãn.
     /// </summary>
-    private GameObject InstantiateModel(string model_path, string label)
+    private GameObject InstantiateModel(string model_name, string label)
     {
-        if (String.IsNullOrEmpty( model_path))
+        if (String.IsNullOrEmpty(model_name))
         {
             Debug.LogError("Model is null");
             return null;
         }
-        //model_path = 
-        //GameObject obj = Instantiate(model
+
         GameObject obj = null;
+        string model_path = Path.Combine(GeneratorSettings.Instance.RootPath, model_name);
+        AssetBundleLoader.Instance.TryGetModel(model_path, out obj);
+        Debug.Log("Try load model successed \n" + model_path);
+
         var labeling = obj.AddComponent<Labeling>();
         labeling.labels = new List<string> { label };
         labeling.RefreshLabeling();

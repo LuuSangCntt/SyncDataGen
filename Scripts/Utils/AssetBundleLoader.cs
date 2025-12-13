@@ -36,39 +36,74 @@ public class AssetBundleLoader : MonoBehaviour
     }
 
     /// <summary>
-    /// Lấy model theo relative_path.
+    /// Lấy model theo path. Path là đường dẫn đầy đủ
     /// Nếu đã cache thì dùng lại, nếu chưa thì load từ AssetBundle.
     /// </summary>
-    public bool TryGetModel(string relative_path, out GameObject obj)
+    public bool TryGetModel(string path, out GameObject obj)
     {
         obj = null;
 
-        if (string.IsNullOrEmpty(relative_path))
+        if (string.IsNullOrEmpty(path))
         {
-            Debug.LogWarning("Path invalid: " + relative_path);
+            Debug.LogWarning("Path invalid: " + path);
             return false;
         }
 
         // Nếu đã load prefab trước đó
-        if (LoadedModels.TryGetValue(relative_path, out GameObject prefab))
+        if (LoadedModels.TryGetValue(path, out GameObject prefab))
         {
             obj = Instantiate(prefab);
             return true;
         }
 
         // Chưa load -> thử load từ assetbundle
-        obj = TryLoadAssetBundle(relative_path);
+        obj = TryLoadAssetBundle(path);
         return obj != null;
     }
 
     /// <summary>
     /// Load prefab từ file AssetBundle
     /// </summary>
-    private GameObject TryLoadAssetBundle(string relative_path)
-    {
-        string configPath = Path.Combine(Application.streamingAssetsPath, "GeneratorSettings.yaml");
-        string path = Path.Combine(GeneratorSettings.Instance.RootPath, relative_path);
+    //private GameObject TryLoadAssetBundle(string path)
+    //{
+    //    string path = Path.Combine(GeneratorSettings.Instance.RootPath, path);
 
+    //    if (!File.Exists(path))
+    //    {
+    //        Debug.LogWarning("File not found: " + path);
+    //        return null;
+    //    }
+
+    //    var bundle = AssetBundle.LoadFromFile(path);
+    //    if (bundle == null)
+    //    {
+    //        Debug.LogWarning("Failed to load AssetBundle: " + path);
+    //        return null;
+    //    }
+
+    //    // (Điều kiện: kiểm soát AssetBundle chỉ có 1 GameObject)
+    //    GameObject prefab = bundle.LoadAllAssets()[0] as GameObject;
+    //    if (prefab == null)
+    //    {
+    //        Debug.LogWarning("First asset is not a GameObject in bundle: " + path);
+    //        bundle.Unload(false);
+    //        return null;
+    //    }
+
+    //    // Cache prefab trước khi unload bundle
+    //    LoadedModels[path] = prefab;
+
+    //    // Tạo instance để trả về
+    //    GameObject obj = Instantiate(prefab);
+
+    //    // Giải phóng data bundle, giữ lại prefab đã cache
+    //    bundle.Unload(false);
+
+    //    return obj;
+    //}
+
+    private GameObject TryLoadAssetBundle(string path)
+    {
         if (!File.Exists(path))
         {
             Debug.LogWarning("File not found: " + path);
@@ -92,7 +127,7 @@ public class AssetBundleLoader : MonoBehaviour
         }
 
         // Cache prefab trước khi unload bundle
-        LoadedModels[relative_path] = prefab;
+        LoadedModels[path] = prefab;
 
         // Tạo instance để trả về
         GameObject obj = Instantiate(prefab);

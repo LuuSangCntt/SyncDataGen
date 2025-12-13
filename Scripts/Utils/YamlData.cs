@@ -37,7 +37,7 @@ public class YamlData<T> where T : YamlData<T>
             string yamlString = File.ReadAllText(fullPath);
             var input = new StringReader(yamlString);
 
-            Debug.Log($"YAML load \n{yamlString}");
+            //Debug.Log($"YAML load \n{yamlString}");
             var deserializer = new DeserializerBuilder()
                 .WithNamingConvention(CamelCaseNamingConvention.Instance)
                 .WithTypeConverter(new Vector3YamlConverter())
@@ -45,7 +45,7 @@ public class YamlData<T> where T : YamlData<T>
                 .IgnoreUnmatchedProperties()
                 .IgnoreUnmatchedProperties()
                 .Build();
-            Debug.Log($"YAML deserializer created for {typeof(T)}");
+            //Debug.Log($"YAML deserializer created for {typeof(T)}");
             T config = deserializer.Deserialize<T>(input);
             Debug.Log($"YAML load {typeof(T)} succeeded. \n{fullPath}");
             return config;
