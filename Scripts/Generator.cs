@@ -297,7 +297,6 @@ public class Generator : MonoBehaviour
         Debug.Log("Starting data generation");
         float startTime = Time.time;
 
-
         foreach (var model in parameters.Models)
         {
             int pictureCount = 0;
@@ -315,7 +314,11 @@ public class Generator : MonoBehaviour
                 DestroyCurrentModel();
                 currentModel = InstantiateModel(variant.Name, model.Label);
 
-                if (currentModel == null) continue;
+                if (currentModel == null)
+                {
+                    Debug.LogError("Model is null");
+                    continue;
+                }
 
                 for (int i = 0; i < picturesPerVariant && pictureCount < ParameterPack.Instance.NumberOfPicturesPerModel; i++)
                 {
@@ -377,7 +380,7 @@ public class Generator : MonoBehaviour
     {
         objectNumber = 0;
         validCount = 0;
-
+        Debug.Log("GenerateSingleImage");
 
         if (currentModel == null || objCamera == null || perceptionCamera == null)
         {
@@ -391,15 +394,14 @@ public class Generator : MonoBehaviour
             validCount = 0;
             yield break;
         }
-
+        Debug.Log("GenerateSingleImage1");
         WeatherManager.Instance.SetRandomSceneBrightness();
-
+        Debug.Log("GenerateSingleImage2");
         bool finish = false;
         while (!finish)
         {
             float targetRatio = (float)UnityEngine.Random.Range(ParameterPack.Instance.DoLonAnhMin, ParameterPack.Instance.DoLonAnhMax) / 100;
             Debug.Log("Target ratio = " + targetRatio);
-
 
             //Bước 1: tìm vị trí đặt vật và camera sao cho tỉ lệ hiển thị vật khoảng 0.3
             Debug.Log("Bắt đầu bước 1");

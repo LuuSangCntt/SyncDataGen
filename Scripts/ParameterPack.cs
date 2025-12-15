@@ -14,6 +14,11 @@ public class ParameterPack : YamlData<ParameterPack>
     public int MinBoundingBoxWidth = 50;
     public int MinBoundingBoxHeight = 50;
 
+    public int LightIntensity_min = 20000;
+    public int LightIntensity_max = 130000;   // max là 130.000
+    public int Temperature_min = 1500;
+    public int Temperature_max = 20000;
+
     //Giới hạn tùy chỉnh về ảnh đối tượng
     public int DoLonAnhMin = 30; //Tỉ lệ về diện tích boundingbox của vật so với tỉ lệ ảnh (%)
     public int DoLonAnhMax = 50;

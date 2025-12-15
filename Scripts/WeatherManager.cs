@@ -1,4 +1,5 @@
 ﻿using UnityEngine;
+using UnityEngine.Experimental.GlobalIllumination;
 using UnityEngine.Rendering.HighDefinition;
 
 public class WeatherManager : MonoBehaviour
@@ -42,7 +43,8 @@ public class WeatherManager : MonoBehaviour
         if (m_directionalLightHDData != null)
         {
             // Lấy cường độ gốc của Directional Light
-            m_originalLightIntensity = m_directionalLightHDData.intensity;
+            //m_originalLightIntensity = m_directionalLightHDData.intensity;
+            m_originalLightIntensity = m_directionalLight.intensity;
             Debug.Log($"WeatherManager: Cường độ ánh sáng gốc được lưu trữ: {m_originalLightIntensity}");
         }
         else
@@ -68,7 +70,8 @@ public class WeatherManager : MonoBehaviour
 
         brightnessFactor = Mathf.Clamp01(brightnessFactor);
         float newIntensity = m_originalLightIntensity * brightnessFactor;
-        m_directionalLightHDData.intensity = newIntensity;
+        //m_directionalLightHDData.intensity = newIntensity;
+        m_directionalLight.intensity = newIntensity; 
 
         Debug.Log($"Đã điều chỉnh độ sáng scene. Hệ số: {brightnessFactor}, Cường độ mới: {newIntensity}");
     }
@@ -94,11 +97,12 @@ public class WeatherManager : MonoBehaviour
 
         // 3. Tính toán cường độ mới.
         //float newIntensity = m_originalLightIntensity * randomFactor;
-        float newIntensity = Random.Range(100, 130000);
-        float newTemperature = Random.Range(1500, 20000);
+        float newIntensity = Random.Range(ParameterPack.Instance.LightIntensity_min, ParameterPack.Instance.LightIntensity_max);
+        float newTemperature = Random.Range(ParameterPack.Instance.Temperature_min, ParameterPack.Instance.Temperature_max);
 
         // 4. Gán cường độ mới cho Directional Light.
-        m_directionalLightHDData.intensity = newIntensity;
+        //m_directionalLightHDData.intensity = newIntensity;
+        m_directionalLight.intensity = newIntensity;
         m_directionalLight.colorTemperature = newTemperature;
         //m_directionalLight.intensity = newIntensity;
 

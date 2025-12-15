@@ -1,9 +1,15 @@
 ﻿using System.Collections.Generic;
 using System.IO;
 using UnityEngine;
+using UnityEngine.Rendering.HighDefinition;
 
 public class AssetBundleLoader : MonoBehaviour
 {
+
+#if UNITY_6000_0_OR_NEWER
+    public WaterSurface water_surface;
+
+#endif
     public static AssetBundleLoader Instance;
 
     public Dictionary<string, GameObject> LoadedModels = new Dictionary<string, GameObject>();
@@ -17,7 +23,7 @@ public class AssetBundleLoader : MonoBehaviour
             return;
         }
         Instance = this;
-        DontDestroyOnLoad(gameObject); // Giữ qua scene nếu cần
+        //DontDestroyOnLoad(gameObject); // Giữ qua scene nếu cần
     }
 
     public string objectName = "ObjectName"; // Tên đối tượng để debug
@@ -91,6 +97,13 @@ public class AssetBundleLoader : MonoBehaviour
 
         // Tạo instance để trả về
         GameObject obj = Instantiate(prefab);
+#if UNITY_6000_0_OR_NEWER
+        if (obj != null && obj.name.StartsWith("Sea."))
+        {
+            var fit = obj.AddComponent<FitToWaterSurface>();
+            fit.targetSurface = water_surface;
+        }
+#endif
 
         // Giải phóng data bundle, giữ lại prefab đã cache
         bundle.Unload(false);

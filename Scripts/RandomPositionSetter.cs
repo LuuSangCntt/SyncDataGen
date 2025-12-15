@@ -263,7 +263,7 @@ public class RandomPositionSetter : MonoBehaviour
         if (Physics.Raycast(pos, Vector3.down, out RaycastHit hit, Mathf.Infinity, layerMask))
         {
             //Debug.Log("Hit : " + hit.collider.gameObject.name);
-            if (hit.collider.gameObject.TryGetComponent<TerrainCollider>(out TerrainCollider terraincollider))
+            //if (hit.collider.gameObject.TryGetComponent<TerrainCollider>(out TerrainCollider terraincollider))
             {
                 return hit.point.y;
             }
